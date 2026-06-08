@@ -39,13 +39,63 @@
     <div id="root"></div>
   <script>
   (function() {
+    // ── Board of Directors replacement ──
+    function injectBoard() {
+      if (document.getElementById('gl-board-section')) return true;
+      const allH2 = [...document.querySelectorAll('h2')];
+      const ledByH2 = allH2.find(el => el.textContent.includes('Led by'));
+      if (!ledByH2) return false;
+
+      // The label pill is the previous sibling container; the text div follows the h2
+      const container = ledByH2.parentElement;
+      if (!container) return false;
+
+      // Replace the entire inner content of the motion div (label + h2 + paragraphs)
+      container.innerHTML = `
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border-radius:999px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);color:rgb(74,222,128);font-size:14px;font-weight:500;margin-bottom:24px;">
+          <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m15 14 5-5-5-5'/><path d='M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13'/></svg>
+          <span>Board of Directors</span>
+        </div>
+        <h2 style="font-size:clamp(1.75rem,4vw,2.25rem);font-family:'Space Grotesk',sans-serif;font-weight:700;margin-bottom:32px;letter-spacing:-0.02em;">Board of Directors</h2>
+        <div id="gl-board-section" style="display:flex;flex-direction:column;gap:32px;">
+          <div style="padding:24px;border-radius:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:18px;font-family:'Space Grotesk',sans-serif;font-weight:700;margin-bottom:4px;">Dr. Zaher Eltawil</div>
+            <div style="font-size:13px;color:rgb(74,222,128);font-weight:500;margin-bottom:16px;letter-spacing:0.02em;">Co-Founder &amp; CEO</div>
+            <div style="display:flex;flex-direction:column;gap:12px;color:rgba(255,255,255,0.6);font-size:15px;line-height:1.7;">
+              <p style="margin:0;">Dr. Zaher Eltawil is a visionary founder and global leader in energy efficiency, uniquely capable of scaling AI-powered solutions into high-growth markets.</p>
+              <p style="margin:0;">With a practitioners' approach backed by decades of executive experience, he leads GridLeap with a mission to deliver measurable impact for investors, utilities, and end-users alike.</p>
+              <p style="margin:0;">Our leadership team comprises seasoned senior executives who bridge the gap between advanced technology and practical, on-the-ground implementation.</p>
+            </div>
+          </div>
+          <div style="padding:24px;border-radius:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:18px;font-family:'Space Grotesk',sans-serif;font-weight:700;margin-bottom:4px;">Raymond Najm</div>
+            <div style="font-size:13px;color:rgb(74,222,128);font-weight:500;margin-bottom:16px;letter-spacing:0.02em;">Board Member</div>
+            <div style="display:flex;flex-direction:column;gap:12px;color:rgba(255,255,255,0.6);font-size:15px;line-height:1.7;">
+              <p style="margin:0;">Raymond Najm is an experienced transformation leader with a proven track record of turning strategy into scalable execution across global organizations.</p>
+              <p style="margin:0;">Drawing on extensive experience in management consulting, business transformation, and digital innovation, he helps GridLeap build the operating models and partnerships needed to accelerate growth and deliver measurable results.</p>
+              <p style="margin:0;">Our leadership team comprises seasoned senior executives who bridge the gap between advanced technology and practical, on-the-ground implementation.</p>
+            </div>
+          </div>
+        </div>
+      `;
+      return true;
+    }
+
+    const boardObserver = new MutationObserver(injectBoard);
+    boardObserver.observe(document.getElementById('root') || document.body, { childList: true, subtree: true });
+    injectBoard();
+  })();
+  </script>
+
+  <script>
+  (function() {
     const LOGO = '/assets/mcgill-dobson-logo.png';
 
     function inject() {
-      if (document.getElementById('gl-dobson-section')) return true;
-      const allPs = [...document.querySelectorAll('p')];
-      const heroPara = allPs.find(el => el.textContent.includes('decarbonization'));
-      if (!heroPara) return false;
+      if (document.getElementById('gl-dobson-section')) return;
+      // Target only the hero paragraph — it uniquely has both mb-10 and mx-auto classes
+      const heroPara = document.querySelector('p.mb-10.mx-auto');
+      if (!heroPara) return;
       const el = document.createElement('div');
       el.id = 'gl-dobson-section';
       el.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:12px;margin-top:32px;padding-top:28px;border-top:1px solid rgba(255,255,255,0.1);';
@@ -54,10 +104,10 @@
       return true;
     }
 
-    const timer = setInterval(function() {
-      if (inject()) clearInterval(timer);
-    }, 150);
-    setTimeout(function() { clearInterval(timer); }, 10000);
+    // Use MutationObserver so re-injection fires on every React navigation
+    const observer = new MutationObserver(inject);
+    observer.observe(document.getElementById('root') || document.body, { childList: true, subtree: true });
+    inject();
   })();
   </script>
   </body>
