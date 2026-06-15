@@ -39,21 +39,6 @@
     <div id="root"></div>
   <script>
   (function() {
-    // ── Fix mojibake em dash in Zaher quote ──
-    function fixEmDash() {
-      const allPs = [...document.querySelectorAll('p')];
-      const p = allPs.find(el => el.textContent.includes('Zaher Eltawil'));
-      if (!p) return false;
-      p.innerHTML = p.innerHTML.replace(/â€[""]/g, '-');
-      return true;
-    }
-    const emTimer = setInterval(function() { if (fixEmDash()) clearInterval(emTimer); }, 150);
-    setTimeout(function() { clearInterval(emTimer); }, 10000);
-  })();
-  </script>
-
-  <script>
-  (function() {
     // ── Board of Directors replacement ──
     function injectBoard() {
       if (document.getElementById('gl-board-section')) return true;
